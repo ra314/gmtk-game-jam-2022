@@ -1,6 +1,6 @@
 extends Node2D
 
-const GRID_SIDE_LENGTH := 100
+const GRID_SIDE_LENGTH := 128
 
 const FRONT = 1
 const BACK = 2
@@ -9,14 +9,16 @@ const RIGHT = 4
 const TOP = 5
 const BOTTOM = 6
 var dice := []
+var curr_grid_pos := Vector2(1,1)
+const FALL_TILE_GRID_POS = Vector2(3,0)
 
 func initialize_dice() -> Array:
 	var dice := [0,0,0,0,0,0,0]
 	dice[TOP] = 1
-	dice[FRONT] = 3
+	dice[FRONT] = 4
 	dice[RIGHT] = 5
 	dice[LEFT] = 2
-	dice[BACK] = 4
+	dice[BACK] = 3
 	dice[BOTTOM] = 6
 	return dice
 
@@ -59,15 +61,23 @@ func _ready():
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
 	if Input.is_action_just_released("ui_right"):
-		position += Vector2(GRID_SIDE_LENGTH, 0)
+		curr_grid_pos += Vector2(1,0)
+		$Label.rect_position += Vector2(GRID_SIDE_LENGTH, 0)
 		dice = roll_right()
 	elif Input.is_action_just_released("ui_left"):
-		position -= Vector2(GRID_SIDE_LENGTH, 0)
+		curr_grid_pos -= Vector2(1,0)
+		$Label.rect_position -= Vector2(GRID_SIDE_LENGTH, 0)
 		dice = roll_left()
 	elif Input.is_action_just_released("ui_up"):
-		position -= Vector2(0, GRID_SIDE_LENGTH)
+		curr_grid_pos -= Vector2(0,1)
+		$Label.rect_position -= Vector2(0, GRID_SIDE_LENGTH)
 		dice = roll_backward()
 	elif Input.is_action_just_released("ui_down"):
-		position += Vector2(0, GRID_SIDE_LENGTH)
+		curr_grid_pos += Vector2(0,1)
+		$Label.rect_position += Vector2(0, GRID_SIDE_LENGTH)
 		dice = roll_forward()
 	$Label.text = str(dice[TOP])
+	
+	if curr_grid_pos == FALL_TILE_GRID_POS:
+		curr_grid_pos -= Vector2(0,4)
+		$Label.rect_position += Vector2(0, GRID_SIDE_LENGTH*4)
