@@ -8,49 +8,50 @@ const LEFT = 3
 const RIGHT = 4
 const TOP = 5
 const BOTTOM = 6
-var dice := []
+var die := []
+var position_to_move_to := Vector2()
 
-func initialize_dice() -> Array:
-	var dice := [0,0,0,0,0,0,0]
-	dice[TOP] = 1
-	dice[FRONT] = 4
-	dice[RIGHT] = 5
-	dice[LEFT] = 2
-	dice[BACK] = 3
-	dice[BOTTOM] = 6
-	return dice
+func initialize_die() -> Array:
+	var die := [0,0,0,0,0,0,0]
+	die[TOP] = 1
+	die[FRONT] = 4
+	die[RIGHT] = 5
+	die[LEFT] = 2
+	die[BACK] = 3
+	die[BOTTOM] = 6
+	return die
 
 func roll_forward() -> Array:
-	var new_dice := dice.duplicate()
-	new_dice[FRONT] = dice[TOP]
-	new_dice[TOP] = dice[BACK]
-	new_dice[BACK] = dice[BOTTOM]
-	new_dice[BOTTOM] = dice[FRONT]
-	return new_dice
+	var new_die := die.duplicate()
+	new_die[FRONT] = die[TOP]
+	new_die[TOP] = die[BACK]
+	new_die[BACK] = die[BOTTOM]
+	new_die[BOTTOM] = die[FRONT]
+	return new_die
 
 func roll_backward() -> Array:
-	var new_dice := dice.duplicate()
-	new_dice[TOP] = dice[FRONT]
-	new_dice[BACK] = dice[TOP]
-	new_dice[BOTTOM] = dice[BACK]
-	new_dice[FRONT] = dice[BOTTOM]
-	return new_dice
+	var new_die := die.duplicate()
+	new_die[TOP] = die[FRONT]
+	new_die[BACK] = die[TOP]
+	new_die[BOTTOM] = die[BACK]
+	new_die[FRONT] = die[BOTTOM]
+	return new_die
 
 func roll_right() -> Array:
-	var new_dice := dice.duplicate()
-	new_dice[TOP] = dice[LEFT]
-	new_dice[LEFT] = dice[BOTTOM]
-	new_dice[BOTTOM] = dice[RIGHT]
-	new_dice[RIGHT] = dice[TOP]
-	return new_dice
+	var new_die := die.duplicate()
+	new_die[TOP] = die[LEFT]
+	new_die[LEFT] = die[BOTTOM]
+	new_die[BOTTOM] = die[RIGHT]
+	new_die[RIGHT] = die[TOP]
+	return new_die
 
 func roll_left() -> Array:
-	var new_dice := dice.duplicate()
-	new_dice[LEFT] = dice[TOP]
-	new_dice[BOTTOM] = dice[LEFT]
-	new_dice[RIGHT] = dice[BOTTOM]
-	new_dice[TOP] = dice[RIGHT]
-	return new_dice
+	var new_die := die.duplicate()
+	new_die[LEFT] = die[TOP]
+	new_die[BOTTOM] = die[LEFT]
+	new_die[RIGHT] = die[BOTTOM]
+	new_die[TOP] = die[RIGHT]
+	return new_die
 
 
 
@@ -58,6 +59,7 @@ func roll_left() -> Array:
 var curr_grid_pos := Vector2(7,-1)
 
 const FALL_TILE_ENUM := 3
+const BOUNCE_TILE_ENUM := 5
 const INVALID_TILE_ENUM := -1
 const WIN_TILE_ENUM := 6
 var TILE_SIZE: Vector2
@@ -65,18 +67,22 @@ var SCALE: Vector2
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
-	dice = initialize_dice()
+	die = initialize_die()
 	TILE_SIZE = $TileLayer1.cell_size
 	SCALE = $TileLayer1.scale/2
+	position_to_move_to = $Sprite.position
+	$Sprite/Camera2D.offset_v = -100
 	update_debug_gui()
 
 func update_debug_gui():
-	$TOP.text = str(dice[TOP])
-	$LEFT.text = str(dice[LEFT])
-	$FRONT.text = str(dice[FRONT])
+	$TOP.text = str(die[TOP])
+	$LEFT.text = str(die[LEFT])
+	$FRONT.text = str(die[FRONT])
 
 func get_curr_cell(pos: Vector2) -> int:
 	return $TileLayer1.get_cell(pos[0], pos[1])
+func get_curr_cell_layer2(pos: Vector2) -> int:
+	return $TileLayer2.get_cell(pos[0], pos[1])
 
 var move_dir_to_grid_pos_modifier = {"ui_right": Vector2(0,-1), # NE
 									 "ui_up": Vector2(-1,0), # NW
@@ -95,29 +101,47 @@ var move_dir_to_roll_func = {"ui_right": "roll_right",
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
+	# Set z_index
+	$Sprite.z_index = 4+($Sprite.position.y)
+	# Intro Camera
+	if $Sprite/Camera2D.offset_v != 0:
+		$Sprite/Camera2D.offset_v = 0
 	for ui_direction in move_dir_to_grid_pos_modifier.keys():
 		if Input.is_action_just_released(ui_direction):
-			# Validate if the dice is within bounds
+			# Validate if the die is within bounds
 			var next_grid_pos: Vector2 = curr_grid_pos + move_dir_to_grid_pos_modifier[ui_direction]
 			if get_curr_cell(next_grid_pos) == INVALID_TILE_ENUM:
 				break
+			# Check if die is colliding with block
+			if has_node("Block"):
+				if $Block.curr_grid_pos == next_grid_pos:
+					if get_curr_cell(next_grid_pos+ move_dir_to_grid_pos_modifier[ui_direction]) == INVALID_TILE_ENUM:
+						break
 			# Update grid pos
 			curr_grid_pos = next_grid_pos
-			# Update the position of the dice within the game
-			$Sprite.position += TILE_SIZE*SCALE*move_dir_to_pos_modifier[ui_direction]
-			# Rotate the dice's faces
-			dice = call(move_dir_to_roll_func[ui_direction])
+			# Update the position of the die within the game
+			position_to_move_to += (TILE_SIZE*SCALE*move_dir_to_pos_modifier[ui_direction])
+			# Rotate the die's faces
+			die = call(move_dir_to_roll_func[ui_direction])
 			# Update the debug which shows the TOP number
 			update_debug_gui()
 			break
 	# Set Left Number
-	$Sprite/Numberleft.frame = dice[LEFT]-1
-	$Sprite/Numberright.frame = dice[RIGHT]-1
-	$Sprite/Numbertop.frame = dice[TOP]-1
+	$Sprite/Numberleft.frame = die[LEFT]-1
+	$Sprite/Numberright.frame = die[FRONT]-1
+	$Sprite/Numbertop.frame = die[TOP]-1
+	$Sprite/Numberleft.offset = $Sprite.offset
+	$Sprite/Numberright.offset = $Sprite.offset
+	$Sprite/Numbertop.offset = $Sprite.offset
 	if get_curr_cell(curr_grid_pos) == FALL_TILE_ENUM:
 		curr_grid_pos += Vector2(4,4)
-		$Sprite.position += TILE_SIZE*SCALE*Vector2(0,8)
+		position_to_move_to += TILE_SIZE*SCALE*Vector2(0,8)
+	if get_curr_cell_layer2(curr_grid_pos) == BOUNCE_TILE_ENUM:
+		curr_grid_pos -= Vector2(4,4)
+		position_to_move_to -= TILE_SIZE*SCALE*Vector2(0,8)
 	
 	if get_curr_cell(curr_grid_pos) == WIN_TILE_ENUM:
-		if dice[TOP] == 5:
-			print("Win!")
+		if die[TOP] == 5:
+			print(get_tree().get_current_scene().get_name())
+			get_tree().change_scene("res://Level" + str(int(get_tree().current_scene.name) + 1) + ".tscn")
+	$Sprite.position = lerp($Sprite.position, position_to_move_to, 0.3)
