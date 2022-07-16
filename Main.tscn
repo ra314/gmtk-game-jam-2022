@@ -1,9 +1,10 @@
-[gd_scene load_steps=6 format=2]
+[gd_scene load_steps=7 format=2]
 
 [ext_resource path="res://Main.gd" type="Script" id=1]
 [ext_resource path="res://Montserrat-Regular.ttf" type="DynamicFontData" id=2]
 [ext_resource path="res://blue-square.svg" type="Texture" id=3]
 [ext_resource path="res://Tilesets/TilesOrange.tres" type="TileSet" id=4]
+[ext_resource path="res://Assets/Die.png" type="Texture" id=5]
 
 [sub_resource type="DynamicFont" id=1]
 size = 80
@@ -101,12 +102,19 @@ scale = Vector2( 2, 2 )
 z_index = -1
 texture = ExtResource( 3 )
 
+[node name="Sprite12" type="Sprite" parent="."]
+position = Vector2( 62, 37 )
+z_index = 2
+texture = ExtResource( 5 )
+
 [node name="TileLayer1" type="TileMap" parent="."]
+z_index = 1
 mode = 1
 tile_set = ExtResource( 4 )
 cell_size = Vector2( 16, 8 )
 cell_quadrant_size = 12
 format = 1
+tile_data = PoolIntArray( 131083, 4, 0 )
 
 [node name="TileLayer2" type="TileMap" parent="."]
 mode = 1
@@ -114,3 +122,4 @@ tile_set = ExtResource( 4 )
 cell_size = Vector2( 16, 8 )
 cell_quadrant_size = 12
 format = 1
+tile_data = PoolIntArray( -131065, 3, 0, -131064, 2, 0, -65528, 1, 0, 7, 1, 0, 8, 2, 0, 131082, 1, 0, 131083, 2, 0, 196618, 2, 0, 196619, 1, 0, 262154, 1, 0, 327690, 2, 0 )
