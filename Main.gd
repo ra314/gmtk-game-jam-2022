@@ -67,6 +67,12 @@ func _ready():
 	dice = initialize_dice()
 	TILE_SIZE = $TileLayer1.cell_size
 	SCALE = $TileLayer1.scale/2
+	update_debug_gui()
+
+func update_debug_gui():
+	$TOP.text = str(dice[TOP])
+	$LEFT.text = str(dice[LEFT])
+	$FRONT.text = str(dice[FRONT])
 
 func get_curr_cell(pos: Vector2) -> int:
 	return $TileLayer1.get_cell(pos[0], pos[1])
@@ -82,9 +88,9 @@ var move_dir_to_pos_modifier = {"ui_right": Vector2(1,-1), # NE
 								"ui_left": Vector2(-1,1)} # Sw
 
 var move_dir_to_roll_func = {"ui_right": "roll_right",
-								"ui_up": "roll_left",
-								"ui_down": "roll_backward",
-								"ui_left": "roll_forward"}
+							 "ui_up": "roll_backward",
+							 "ui_down": "roll_forward",
+							 "ui_left": "roll_left"}
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
@@ -100,6 +106,8 @@ func _process(delta):
 			$Sprite.position += TILE_SIZE*SCALE*move_dir_to_pos_modifier[ui_direction]
 			# Rotate the dice's faces
 			dice = call(move_dir_to_roll_func[ui_direction])
+			# Update the debug which shows the TOP number
+			update_debug_gui()
 			break
 	
 	if get_curr_cell(curr_grid_pos) == FALL_TILE_ENUM:
