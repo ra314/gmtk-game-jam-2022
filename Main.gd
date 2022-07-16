@@ -59,6 +59,7 @@ var curr_grid_pos := Vector2(7,-1)
 
 const FALL_TILE_ENUM := 3
 const INVALID_TILE_ENUM := -1
+const WIN_TILE_ENUM := 6
 var TILE_SIZE: Vector2
 var SCALE: Vector2
 
@@ -109,7 +110,14 @@ func _process(delta):
 			# Update the debug which shows the TOP number
 			update_debug_gui()
 			break
-	
+	# Set Left Number
+	$Sprite/Numberleft.frame = dice[LEFT]-1
+	$Sprite/Numberright.frame = dice[RIGHT]-1
+	$Sprite/Numbertop.frame = dice[TOP]-1
 	if get_curr_cell(curr_grid_pos) == FALL_TILE_ENUM:
 		curr_grid_pos += Vector2(4,4)
 		$Sprite.position += TILE_SIZE*SCALE*Vector2(0,8)
+	
+	if get_curr_cell(curr_grid_pos) == WIN_TILE_ENUM:
+		if dice[TOP] == 5:
+			print("Win!")
