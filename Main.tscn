@@ -1,9 +1,13 @@
-[gd_scene load_steps=6 format=2]
+[gd_scene load_steps=10 format=2]
 
 [ext_resource path="res://Main.gd" type="Script" id=1]
 [ext_resource path="res://Assets/Die.png" type="Texture" id=2]
 [ext_resource path="res://Montserrat-Regular.ttf" type="DynamicFontData" id=3]
 [ext_resource path="res://Tilesets/TilesOrange.tres" type="TileSet" id=4]
+[ext_resource path="res://Assets/Background.png" type="Texture" id=5]
+[ext_resource path="res://Assets/Die Sides/Left/DieLeft.png" type="Texture" id=6]
+[ext_resource path="res://Assets/Die Sides/DieRight.png" type="Texture" id=7]
+[ext_resource path="res://Assets/Die Sides/DieTop.png" type="Texture" id=8]
 
 [sub_resource type="DynamicFont" id=1]
 size = 50
@@ -11,31 +15,6 @@ font_data = ExtResource( 3 )
 
 [node name="Node2D" type="Node2D"]
 script = ExtResource( 1 )
-
-[node name="Sprite" type="Sprite" parent="."]
-position = Vector2( 496, 240 )
-scale = Vector2( 8, 8 )
-z_index = 10
-texture = ExtResource( 2 )
-
-[node name="TileLayer1" type="TileMap" parent="."]
-scale = Vector2( 8, 8 )
-mode = 1
-tile_set = ExtResource( 4 )
-cell_size = Vector2( 16, 8 )
-cell_quadrant_size = 12
-format = 1
-tile_data = PoolIntArray( -196602, 3, 0, -196601, 2, 0, -131065, 1, 0, -65530, 1, 0, -65529, 2, 0, 65545, 1, 0, 65546, 2, 0, 131081, 2, 0, 131082, 1, 0, 196617, 1, 0, 262153, 2, 0 )
-
-[node name="TileLayer2" type="TileMap" parent="."]
-scale = Vector2( 8, 8 )
-z_index = 1
-mode = 1
-tile_set = ExtResource( 4 )
-cell_size = Vector2( 16, 8 )
-cell_quadrant_size = 12
-format = 1
-tile_data = PoolIntArray( 65546, 4, 0 )
 
 [node name="TOP" type="Label" parent="."]
 margin_left = 64.0
@@ -63,3 +42,51 @@ custom_fonts/font = SubResource( 1 )
 text = "2"
 align = 1
 valign = 1
+
+[node name="Sprite" type="Sprite" parent="."]
+position = Vector2( 496, 232 )
+scale = Vector2( 8, 8 )
+z_index = 10
+texture = ExtResource( 2 )
+
+[node name="Numberleft" type="Sprite" parent="Sprite"]
+texture = ExtResource( 6 )
+hframes = 6
+
+[node name="Numberright" type="Sprite" parent="Sprite"]
+texture = ExtResource( 7 )
+hframes = 6
+
+[node name="Numbertop" type="Sprite" parent="Sprite"]
+texture = ExtResource( 8 )
+hframes = 6
+
+[node name="Camera2D" type="Camera2D" parent="Sprite"]
+position = Vector2( -0.5, 0.625 )
+scale = Vector2( 0.125, 0.125 )
+smoothing_enabled = true
+
+[node name="Sprite" type="Sprite" parent="Sprite/Camera2D"]
+position = Vector2( 113, 27 )
+scale = Vector2( 13.4, 14.3778 )
+z_index = -1000
+texture = ExtResource( 5 )
+
+[node name="TileLayer1" type="TileMap" parent="."]
+scale = Vector2( 8, 8 )
+mode = 1
+tile_set = ExtResource( 4 )
+cell_size = Vector2( 16, 8 )
+cell_quadrant_size = 12
+format = 1
+tile_data = PoolIntArray( -196602, 3, 0, -196601, 2, 0, -131065, 1, 0, -65530, 1, 0, -65529, 2, 0, 65545, 1, 0, 65546, 2, 0, 131081, 2, 0, 131082, 1, 0, 196617, 6, 0, 262153, 2, 0 )
+
+[node name="TileLayer2" type="TileMap" parent="."]
+scale = Vector2( 8, 8 )
+z_index = 1
+mode = 1
+tile_set = ExtResource( 4 )
+cell_size = Vector2( 16, 8 )
+cell_quadrant_size = 12
+format = 1
+tile_data = PoolIntArray( 65546, 4, 0 )
