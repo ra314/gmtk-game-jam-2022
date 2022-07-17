@@ -8,6 +8,13 @@ const LEFT = 3
 const RIGHT = 4
 const TOP = 5
 const BOTTOM = 6
+
+var top_is_flipped := false
+var left_is_flipped := false
+var right_is_flipped := false
+var rightback_is_flipped := false
+var leftback_is_flipped := false
+
 var die := []
 var position_to_move_to := Vector2()
 
@@ -72,17 +79,32 @@ func _ready():
 	SCALE = $TileLayer1.scale/2
 	position_to_move_to = $Sprite.position
 	$Sprite/Camera2D.offset_v = -100
-	update_debug_gui()
-
-func update_debug_gui():
-	$TOP.text = str(die[TOP])
-	$LEFT.text = str(die[LEFT])
-	$FRONT.text = str(die[FRONT])
 
 func get_curr_cell(pos: Vector2) -> int:
 	return $TileLayer1.get_cell(pos[0], pos[1])
 func get_curr_cell_layer2(pos: Vector2) -> int:
 	return $TileLayer2.get_cell(pos[0], pos[1])
+	
+func animate_die(direction) -> void:
+	if (direction == "ui_up") or (direction == "ui_down"):
+		left_is_flipped = !left_is_flipped
+		rightback_is_flipped = !rightback_is_flipped
+	if (direction == "ui_left") or (direction == "ui_right"):
+		right_is_flipped = !right_is_flipped
+		leftback_is_flipped = !leftback_is_flipped
+	if direction == "ui_up":
+		leftback_is_flipped = top_is_flipped
+		top_is_flipped = right_is_flipped
+	if direction == "ui_down":
+		right_is_flipped = top_is_flipped
+		top_is_flipped = leftback_is_flipped
+	if direction == "ui_right":
+		rightback_is_flipped = top_is_flipped
+		top_is_flipped = left_is_flipped
+	if direction == "ui_left":
+		left_is_flipped = top_is_flipped
+		top_is_flipped = rightback_is_flipped
+
 
 var move_dir_to_grid_pos_modifier = {"ui_right": Vector2(0,-1), # NE
 									 "ui_up": Vector2(-1,0), # NW
@@ -101,6 +123,9 @@ var move_dir_to_roll_func = {"ui_right": "roll_right",
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
+
+	print("left: " + str(left_is_flipped))
+	print("top: " + str(top_is_flipped))
 	# Set z_index
 	$Sprite.z_index = 4+($Sprite.position.y)
 	# Intro Camera
@@ -123,16 +148,23 @@ func _process(delta):
 			position_to_move_to += (TILE_SIZE*SCALE*move_dir_to_pos_modifier[ui_direction])
 			# Rotate the die's faces
 			die = call(move_dir_to_roll_func[ui_direction])
-			# Update the debug which shows the TOP number
-			update_debug_gui()
+
+			# Animate Die
+			animate_die(ui_direction)
 			break
-	# Set Left Number
+	# Set Number/Flipped/Offset
+
 	$Sprite/Numberleft.frame = die[LEFT]-1
 	$Sprite/Numberright.frame = die[FRONT]-1
 	$Sprite/Numbertop.frame = die[TOP]-1
 	$Sprite/Numberleft.offset = $Sprite.offset
 	$Sprite/Numberright.offset = $Sprite.offset
 	$Sprite/Numbertop.offset = $Sprite.offset
+
+	$Sprite/Numberleft.texture = load("res://Assets/Die Sides/DieLeft" + str(left_is_flipped) + ".png")
+	$Sprite/Numberright.texture = load("res://Assets/Die Sides/DieRight" + str(right_is_flipped) + ".png")
+	$Sprite/Numbertop.texture = load("res://Assets/Die Sides/DieTop" + str(top_is_flipped) + ".png")
+
 	if get_curr_cell(curr_grid_pos) == FALL_TILE_ENUM:
 		curr_grid_pos += Vector2(4,4)
 		position_to_move_to += TILE_SIZE*SCALE*Vector2(0,8)
