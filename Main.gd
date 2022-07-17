@@ -8,6 +8,7 @@ const LEFT = 3
 const RIGHT = 4
 const TOP = 5
 const BOTTOM = 6
+export(int) var win_number = 5
 
 var top_is_flipped := false
 var left_is_flipped := false
@@ -173,7 +174,7 @@ func _process(delta):
 		position_to_move_to -= TILE_SIZE*SCALE*Vector2(0,8)
 	
 	if get_curr_cell(curr_grid_pos) == WIN_TILE_ENUM:
-		if die[TOP] == 5:
+		if die[TOP] == win_number:
 			print(get_tree().get_current_scene().get_name())
 			get_tree().change_scene("res://Level" + str(int(get_tree().current_scene.name) + 1) + ".tscn")
 	$Sprite.position = lerp($Sprite.position, position_to_move_to, 0.3)
