@@ -10,7 +10,7 @@ current = true
 smoothing_enabled = true
 
 [node name="Sprite" type="Sprite" parent="."]
-position = Vector2( 775.749, -373.999 )
-scale = Vector2( 21.6844, 23.2667 )
+position = Vector2( 68.0001, -1357 )
+scale = Vector2( 46.2062, 49.5778 )
 z_index = -4096
 texture = ExtResource( 1 )

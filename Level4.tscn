@@ -5,7 +5,7 @@
 [ext_resource path="res://Die.tscn" type="PackedScene" id=3]
 [ext_resource path="res://BackgroundObject.gd" type="Script" id=9]
 
-[node name="Level1" type="Node2D"]
+[node name="Level4" type="Node2D"]
 script = ExtResource( 1 )
 
 [node name="Sprite" parent="." instance=ExtResource( 3 )]

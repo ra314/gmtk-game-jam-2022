@@ -17,6 +17,8 @@ var right_is_flipped := false
 var rightback_is_flipped := false
 var leftback_is_flipped := false
 
+var win_sound_is_playing = false
+
 var die := []
 var position_to_move_to := Vector2()
 
@@ -72,7 +74,7 @@ const BOUNCE_TILE_ENUM := 5
 const INVALID_TILE_ENUM := -1
 const WIN_TILE_ENUM := 6
 const LOCKED_TILE_ENUM := 7
-const UNLOCKED_TILE_ENUM := 4
+const UNLOCKED_TILE_ENUM := 2
 var TILE_SIZE: Vector2
 var SCALE: Vector2
 
@@ -82,6 +84,8 @@ func validate_unlockable_tile_pos_to_key_num():
 	for key in unlockable_tile_pos_to_key_num.keys():
 		var tile_enum = $TileLayer1.get_cell(key.x, key.y)
 		assert(tile_enum == LOCKED_TILE_ENUM)
+	for value in unlockable_tile_pos_to_key_num.values():
+		assert(has_node(value[1]))
 	for x in range(-100, 100):
 		for y in range(-100, 100):
 			if $TileLayer1.get_cell(x,y) == LOCKED_TILE_ENUM:
@@ -94,6 +98,8 @@ func _ready():
 	SCALE = $TileLayer1.scale/2
 	position_to_move_to = $Sprite.position
 	$Sprite/Camera2D.offset_v = -100
+	$Sprite/AnimationPlayer.current_animation = "Idle"
+	var win_sound_is_playing = false
 	validate_unlockable_tile_pos_to_key_num()
 
 func get_curr_cell(pos: Vector2) -> int:
@@ -121,6 +127,11 @@ func animate_die(direction) -> void:
 		left_is_flipped = top_is_flipped
 		top_is_flipped = rightback_is_flipped
 
+func step_sound() -> void:
+	var number = (randi() % 4) + 1
+	var step_sound := ("Sprite/Step" + str(number))
+	var sound_player = get_node(step_sound)
+	sound_player.playing = true
 
 var move_dir_to_grid_pos_modifier = {"ui_right": Vector2(0,-1), # NE
 									 "ui_up": Vector2(-1,0), # NW
@@ -139,14 +150,14 @@ var move_dir_to_roll_func = {"ui_right": "roll_right",
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
-
-#	print("left: " + str(left_is_flipped))
-#	print("top: " + str(top_is_flipped))
 	# Set z_index
 	$Sprite.z_index = 4+($Sprite.position.y)
 	# Intro Camera
 	if $Sprite/Camera2D.offset_v != 0:
 		$Sprite/Camera2D.offset_v = 0
+		
+	if Input.is_action_just_pressed("ui_r"):
+		restart_level()
 	for ui_direction in move_dir_to_grid_pos_modifier.keys():
 		if Input.is_action_just_released(ui_direction):
 			# Validate if the die is within bounds
@@ -164,9 +175,9 @@ func _process(delta):
 			position_to_move_to += (TILE_SIZE*SCALE*move_dir_to_pos_modifier[ui_direction])
 			# Rotate the die's faces
 			die = call(move_dir_to_roll_func[ui_direction])
-
 			# Animate Die
 			animate_die(ui_direction)
+			step_sound()
 			break
 	# Set Number/Flipped/Offset
 
@@ -184,18 +195,33 @@ func _process(delta):
 	if get_curr_cell(curr_grid_pos) == FALL_TILE_ENUM:
 		curr_grid_pos += Vector2(4,4)
 		position_to_move_to += TILE_SIZE*SCALE*Vector2(0,8)
+		$Sprite/Fall.playing = true
+		
 	if get_curr_cell_layer2(curr_grid_pos) == BOUNCE_TILE_ENUM:
 		curr_grid_pos -= Vector2(4,4)
 		position_to_move_to -= TILE_SIZE*SCALE*Vector2(0,8)
+		$Sprite/Jump.playing = true
 	
 	if get_curr_cell(curr_grid_pos) == LOCKED_TILE_ENUM:
-		if die[TOP] == unlockable_tile_pos_to_key_num[curr_grid_pos]:
-			print("UNLOCKED")
+		if die[TOP] == unlockable_tile_pos_to_key_num[curr_grid_pos][0]:
+			var gate = get_node(unlockable_tile_pos_to_key_num[curr_grid_pos][1])
+			gate.fade()
 			unlockable_tile_pos_to_key_num.erase(curr_grid_pos)
 			$TileLayer1.set_cell(curr_grid_pos.x, curr_grid_pos.y, UNLOCKED_TILE_ENUM)
+			$TileLayer1.set_cell(gate.curr_grid_pos.x, gate.curr_grid_pos.y, UNLOCKED_TILE_ENUM)
+			$Sprite/Unlocked.playing = true
 	
 	if get_curr_cell(curr_grid_pos) == WIN_TILE_ENUM:
 		if die[TOP] == win_number:
-			print(get_tree().get_current_scene().get_name())
-			get_tree().change_scene("res://Level" + str(int(get_tree().current_scene.name) + 1) + ".tscn")
+			if !win_sound_is_playing:
+				$Sprite/Win.playing = true
+				win_sound_is_playing = true
+				$Sprite/AnimationPlayer.current_animation = "Win"
+
 	$Sprite.position = lerp($Sprite.position, position_to_move_to, 0.3)
+
+func go_to_next_level():
+	get_tree().change_scene("res://Level" + str(int(get_tree().current_scene.name) + 1) + ".tscn")
+func restart_level():
+	get_tree().change_scene("res://Level" + str(int(get_tree().current_scene.name)) + ".tscn")
+

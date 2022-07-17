@@ -1,0 +1,40 @@
+[gd_scene load_steps=6 format=2]
+
+[ext_resource path="res://Main.gd" type="Script" id=1]
+[ext_resource path="res://Tilesets/TilesOrange.tres" type="TileSet" id=2]
+[ext_resource path="res://Die.tscn" type="PackedScene" id=3]
+[ext_resource path="res://Gate1.tscn" type="PackedScene" id=4]
+[ext_resource path="res://BackgroundObject.gd" type="Script" id=9]
+
+[node name="Level5" type="Node2D"]
+script = ExtResource( 1 )
+unlockable_tile_pos_to_key_num = {
+Vector2( 11, 3 ): [ 6, "Gate1" ]
+}
+
+[node name="Sprite" parent="." instance=ExtResource( 3 )]
+
+[node name="Gate1" parent="." instance=ExtResource( 4 )]
+position = Vector2( 880, 176 )
+curr_grid_pos = Vector2( 9, -5 )
+
+[node name="TileLayer1" type="TileMap" parent="."]
+scale = Vector2( 8, 8 )
+z_index = -1000
+mode = 1
+tile_set = ExtResource( 2 )
+cell_size = Vector2( 16, 8 )
+cell_quadrant_size = 12
+format = 1
+tile_data = PoolIntArray( -589817, 536870918, 0, -524281, 536870913, 0, -524279, 536870918, 0, -458747, 536870918, 0, -458745, 536870914, 0, -458743, 536870914, 0, -393211, 536870913, 0, -393209, 536870913, 0, -393207, 536870913, 0, -327675, 536870914, 0, -327673, 536870914, 0, -262139, 536870913, 0, -262137, 536870913, 0, -262135, 536870913, 0, -196603, 536870914, 0, -196601, 536870914, 0, -196599, 536870914, 0, -131067, 536870913, 0, -131065, 536870913, 0, -131063, 536870913, 0, -65531, 536870914, 0, -65530, 1, 0, -65529, 2, 0, -65528, 536870913, 0, -65527, 536870914, 0, 9, 1, 0, 65545, 2, 0, 131081, 1, 0, 131082, 2, 0, 131083, 1, 0, 196617, 2, 0, 196618, 1, 0, 196619, 7, 0, 262153, 1, 0, 262154, 2, 0, 262155, 1, 0 )
+script = ExtResource( 9 )
+
+[node name="TileLayer2" type="TileMap" parent="."]
+scale = Vector2( 8, 8 )
+z_index = -1001
+mode = 1
+tile_set = ExtResource( 2 )
+cell_size = Vector2( 16, 8 )
+cell_quadrant_size = 12
+format = 1
+script = ExtResource( 9 )
