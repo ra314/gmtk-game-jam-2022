@@ -8,11 +8,13 @@ const LEFT = 3
 const RIGHT = 4
 const TOP = 5
 const BOTTOM = 6
+
 var top_is_flipped := false
 var left_is_flipped := false
 var right_is_flipped := false
 var rightback_is_flipped := false
 var leftback_is_flipped := false
+
 var die := []
 var position_to_move_to := Vector2()
 
@@ -103,6 +105,7 @@ func animate_die(direction) -> void:
 		left_is_flipped = top_is_flipped
 		top_is_flipped = rightback_is_flipped
 
+
 var move_dir_to_grid_pos_modifier = {"ui_right": Vector2(0,-1), # NE
 									 "ui_up": Vector2(-1,0), # NW
 									 "ui_down": Vector2(1,0), # SE
@@ -120,6 +123,7 @@ var move_dir_to_roll_func = {"ui_right": "roll_right",
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
+
 	print("left: " + str(left_is_flipped))
 	print("top: " + str(top_is_flipped))
 	# Set z_index
@@ -144,22 +148,23 @@ func _process(delta):
 			position_to_move_to += (TILE_SIZE*SCALE*move_dir_to_pos_modifier[ui_direction])
 			# Rotate the die's faces
 			die = call(move_dir_to_roll_func[ui_direction])
+
 			# Animate Die
 			animate_die(ui_direction)
 			break
 	# Set Number/Flipped/Offset
+
 	$Sprite/Numberleft.frame = die[LEFT]-1
 	$Sprite/Numberright.frame = die[FRONT]-1
 	$Sprite/Numbertop.frame = die[TOP]-1
 	$Sprite/Numberleft.offset = $Sprite.offset
 	$Sprite/Numberright.offset = $Sprite.offset
 	$Sprite/Numbertop.offset = $Sprite.offset
+
 	$Sprite/Numberleft.texture = load("res://Assets/Die Sides/DieLeft" + str(left_is_flipped) + ".png")
 	$Sprite/Numberright.texture = load("res://Assets/Die Sides/DieRight" + str(right_is_flipped) + ".png")
 	$Sprite/Numbertop.texture = load("res://Assets/Die Sides/DieTop" + str(top_is_flipped) + ".png")
-	
-	
-	
+
 	if get_curr_cell(curr_grid_pos) == FALL_TILE_ENUM:
 		curr_grid_pos += Vector2(4,4)
 		position_to_move_to += TILE_SIZE*SCALE*Vector2(0,8)

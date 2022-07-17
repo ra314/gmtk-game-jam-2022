@@ -8,6 +8,7 @@
 [ext_resource path="res://Assets/Die.png" type="Texture" id=6]
 [ext_resource path="res://Assets/Die Sides/DieRightfalse.png" type="Texture" id=7]
 
+
 [sub_resource type="Animation" id=2]
 resource_name = "Idle"
 length = 5.0
@@ -27,6 +28,7 @@ tracks/0/keys = {
 
 [node name="Level1" type="Node2D"]
 script = ExtResource( 1 )
+
 
 [node name="Sprite" type="Sprite" parent="."]
 position = Vector2( 496, 228 )
@@ -53,19 +55,25 @@ hframes = 6
 [node name="Camera2D" type="Camera2D" parent="Sprite"]
 position = Vector2( -0.5, 0.625 )
 scale = Vector2( 0.125, 0.125 )
+
 z_index = -4096
+
 current = true
 smoothing_enabled = true
 
 [node name="Sprite" type="Sprite" parent="Sprite/Camera2D"]
+
 position = Vector2( 775.749, -373.999 )
 scale = Vector2( 21.6844, 23.2667 )
 z_index = -4096
+
 texture = ExtResource( 4 )
 
 [node name="TileLayer1" type="TileMap" parent="."]
 scale = Vector2( 8, 8 )
+
 z_index = -4000
+
 mode = 1
 tile_set = ExtResource( 2 )
 cell_size = Vector2( 16, 8 )
@@ -73,9 +81,11 @@ cell_quadrant_size = 12
 format = 1
 tile_data = PoolIntArray( -196602, 3, 0, -196601, 2, 0, -131065, 1, 0, -65530, 1, 0, -65529, 2, 0, 65545, 536870913, 0, 65546, 2, 0, 131081, 2, 0, 131082, 536870913, 0, 196617, 6, 0, 262153, 2, 0 )
 
+
 [node name="TileLayer2" type="TileMap" parent="."]
 scale = Vector2( 8, 8 )
 z_index = -3999
+
 mode = 1
 tile_set = ExtResource( 2 )
 cell_size = Vector2( 16, 8 )
