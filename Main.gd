@@ -9,6 +9,7 @@ const RIGHT = 4
 const TOP = 5
 const BOTTOM = 6
 export(int) var win_number = 5
+export(Dictionary) var unlockable_tile_pos_to_key_num
 
 var top_is_flipped := false
 var left_is_flipped := false
@@ -70,8 +71,21 @@ const FALL_TILE_ENUM := 3
 const BOUNCE_TILE_ENUM := 5
 const INVALID_TILE_ENUM := -1
 const WIN_TILE_ENUM := 6
+const LOCKED_TILE_ENUM := 7
+const UNLOCKED_TILE_ENUM := 4
 var TILE_SIZE: Vector2
 var SCALE: Vector2
+
+# Checking that the dictionary that maps the unlocking tiles is in agreement
+# With the actualy placement of the tileset
+func validate_unlockable_tile_pos_to_key_num():
+	for key in unlockable_tile_pos_to_key_num.keys():
+		var tile_enum = $TileLayer1.get_cell(key.x, key.y)
+		assert(tile_enum == LOCKED_TILE_ENUM)
+	for x in range(-100, 100):
+		for y in range(-100, 100):
+			if $TileLayer1.get_cell(x,y) == LOCKED_TILE_ENUM:
+				assert(unlockable_tile_pos_to_key_num.has(Vector2(x,y)))
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
@@ -80,6 +94,7 @@ func _ready():
 	SCALE = $TileLayer1.scale/2
 	position_to_move_to = $Sprite.position
 	$Sprite/Camera2D.offset_v = -100
+	validate_unlockable_tile_pos_to_key_num()
 
 func get_curr_cell(pos: Vector2) -> int:
 	return $TileLayer1.get_cell(pos[0], pos[1])
@@ -125,8 +140,8 @@ var move_dir_to_roll_func = {"ui_right": "roll_right",
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
 
-	print("left: " + str(left_is_flipped))
-	print("top: " + str(top_is_flipped))
+#	print("left: " + str(left_is_flipped))
+#	print("top: " + str(top_is_flipped))
 	# Set z_index
 	$Sprite.z_index = 4+($Sprite.position.y)
 	# Intro Camera
@@ -172,6 +187,12 @@ func _process(delta):
 	if get_curr_cell_layer2(curr_grid_pos) == BOUNCE_TILE_ENUM:
 		curr_grid_pos -= Vector2(4,4)
 		position_to_move_to -= TILE_SIZE*SCALE*Vector2(0,8)
+	
+	if get_curr_cell(curr_grid_pos) == LOCKED_TILE_ENUM:
+		if die[TOP] == unlockable_tile_pos_to_key_num[curr_grid_pos]:
+			print("UNLOCKED")
+			unlockable_tile_pos_to_key_num.erase(curr_grid_pos)
+			$TileLayer1.set_cell(curr_grid_pos.x, curr_grid_pos.y, UNLOCKED_TILE_ENUM)
 	
 	if get_curr_cell(curr_grid_pos) == WIN_TILE_ENUM:
 		if die[TOP] == win_number:
