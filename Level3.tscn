@@ -1,100 +1,13 @@
-[gd_scene load_steps=11 format=2]
+[gd_scene load_steps=4 format=2]
 
 [ext_resource path="res://Main.gd" type="Script" id=1]
-[ext_resource path="res://Assets/Die.png" type="Texture" id=2]
-[ext_resource path="res://Montserrat-Regular.ttf" type="DynamicFontData" id=3]
+[ext_resource path="res://Die.tscn" type="PackedScene" id=2]
 [ext_resource path="res://Tilesets/TilesOrange.tres" type="TileSet" id=4]
-[ext_resource path="res://Assets/Background.png" type="Texture" id=5]
-[ext_resource path="res://Assets/Die Sides/DieLeft.png" type="Texture" id=6]
-[ext_resource path="res://Assets/Die Sides/DieRight.png" type="Texture" id=7]
-[ext_resource path="res://Assets/Die Sides/DieTop.png" type="Texture" id=8]
-
-[sub_resource type="DynamicFont" id=1]
-size = 50
-font_data = ExtResource( 3 )
-
-[sub_resource type="Animation" id=2]
-resource_name = "Idle"
-length = 5.0
-loop = true
-tracks/0/type = "value"
-tracks/0/path = NodePath(".:offset")
-tracks/0/interp = 1
-tracks/0/loop_wrap = true
-tracks/0/imported = false
-tracks/0/enabled = true
-tracks/0/keys = {
-"times": PoolRealArray( 0, 2.5, 5 ),
-"transitions": PoolRealArray( 1, 1, 1 ),
-"update": 0,
-"values": [ Vector2( 0, 0 ), Vector2( 0, 1 ), Vector2( 0, 0 ) ]
-}
 
 [node name="Level3" type="Node2D"]
 script = ExtResource( 1 )
 
-[node name="TOP" type="Label" parent="."]
-margin_left = 64.0
-margin_right = 128.0
-margin_bottom = 64.0
-custom_fonts/font = SubResource( 1 )
-text = "2"
-align = 1
-valign = 1
-
-[node name="LEFT" type="Label" parent="."]
-margin_right = 64.0
-margin_bottom = 64.0
-custom_fonts/font = SubResource( 1 )
-text = "2"
-align = 1
-valign = 1
-
-[node name="FRONT" type="Label" parent="."]
-margin_left = 64.0
-margin_top = 64.0
-margin_right = 128.0
-margin_bottom = 128.0
-custom_fonts/font = SubResource( 1 )
-text = "2"
-align = 1
-valign = 1
-
-[node name="Sprite" type="Sprite" parent="."]
-position = Vector2( 496, 228 )
-scale = Vector2( 8, 8 )
-z_index = 10
-texture = ExtResource( 2 )
-
-[node name="AnimationPlayer" type="AnimationPlayer" parent="Sprite"]
-autoplay = "Idle"
-anims/Idle = SubResource( 2 )
-
-[node name="Numberleft" type="Sprite" parent="Sprite"]
-texture = ExtResource( 6 )
-hframes = 6
-frame = 1
-
-[node name="Numberright" type="Sprite" parent="Sprite"]
-texture = ExtResource( 7 )
-hframes = 6
-frame = 3
-
-[node name="Numbertop" type="Sprite" parent="Sprite"]
-texture = ExtResource( 8 )
-hframes = 6
-
-[node name="Camera2D" type="Camera2D" parent="Sprite"]
-position = Vector2( -0.5, 0.625 )
-scale = Vector2( 0.125, 0.125 )
-current = true
-smoothing_enabled = true
-
-[node name="Sprite" type="Sprite" parent="Sprite/Camera2D"]
-position = Vector2( 113, 27 )
-scale = Vector2( 13.4, 14.3778 )
-z_index = -1000
-texture = ExtResource( 5 )
+[node name="Sprite" parent="." instance=ExtResource( 2 )]
 
 [node name="TileLayer1" type="TileMap" parent="."]
 scale = Vector2( 8, 8 )
